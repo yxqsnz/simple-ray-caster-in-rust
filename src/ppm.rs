@@ -3,11 +3,21 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Color {
     pub r: u32,
     pub g: u32,
     pub b: u32,
+}
+
+impl Color {
+    pub fn new<I: Into<usize>>(r: I, g: I, b: I) -> Self {
+        Self {
+            r: r.into() as _,
+            g: g.into() as _,
+            b: b.into() as _,
+        }
+    }
 }
 
 pub struct Ppm {
@@ -21,7 +31,14 @@ impl Ppm {
         Self {
             width,
             height,
-            data: Vec::with_capacity(width * height),
+            data: vec![
+                Color {
+                    r: 255,
+                    g: 255,
+                    b: 255
+                };
+                width * height
+            ],
         }
     }
 
@@ -36,7 +53,7 @@ impl Ppm {
 
         let target_data: Vec<u8> = data
             .iter()
-            .flat_map(|Color { r, g, b }| vec![*r as u8, *g as u8, *b as u8])
+            .flat_map(|Color { r, g, b }| [*r as u8, *g as u8, *b as u8])
             .collect();
 
         written += target.write(&target_data)?;

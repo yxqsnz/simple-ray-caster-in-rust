@@ -1,24 +1,39 @@
+mod map;
 mod ppm;
+mod target;
+use ppm::Ppm;
 use std::{fs::File, io};
 
-use ppm::{Color, Ppm};
+use crate::{
+    map::{MAP_HEIGHT, MAP_WIDTH},
+    target::{TARGET_HEIGHT, TARGET_WIDTH},
+};
+
+mod render;
+
+macro_rules! timeit {
+    ($scope:expr=> $block:block) => {{
+        let started = std::time::Instant::now();
+        let res = $block;
+
+        println!("{}: {:#?}", $scope, started.elapsed());
+        res
+    }};
+}
 
 fn main() -> io::Result<()> {
-    let mut ppm = Ppm::new(512, 512);
+    let mut ppm = Ppm::new(TARGET_HEIGHT, TARGET_WIDTH);
     let mut out = File::create("target/out.ppm")?;
+    let player = (3.456, 2.345, 1.523);
+    println!("{}", map::RAW);
 
-    for i in 0..512 {
-        for j in 0..512 {
-            (*ppm).push(Color {
-                r: (255 * i / 512),
-                g: (255 * j / 512),
-                b: 0,
-            })
-        }
-    }
+    assert_eq!(map::data().len(), MAP_HEIGHT * MAP_WIDTH);
 
-    let written = ppm.write_to(&mut out)?;
+    timeit! {
+        "render" => { render::draw(&mut ppm, player); }
+    };
 
+    let written = timeit! { "write" => { ppm.write_to(&mut out)? }};
     println!("Written {written} bytes.");
     Ok(())
 }
