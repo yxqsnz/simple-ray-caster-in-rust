@@ -17,7 +17,8 @@ fn main() -> io::Result<()> {
         }
     }
 
-    ppm.write_to(&mut out)?;
+    let written = ppm.write_to(&mut out)?;
 
+    println!("Written {written} bytes.");
     Ok(())
 }

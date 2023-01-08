@@ -36,8 +36,7 @@ impl Ppm {
 
         let target_data: Vec<u8> = data
             .iter()
-            .map(|Color { r, g, b }| vec![*r as u8, *g as u8, *b as u8])
-            .flatten()
+            .flat_map(|Color { r, g, b }| vec![*r as u8, *g as u8, *b as u8])
             .collect();
 
         written += target.write(&target_data)?;
