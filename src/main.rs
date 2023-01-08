@@ -2,7 +2,7 @@ mod map;
 mod ppm;
 mod target;
 use ppm::Ppm;
-use std::{fs::File, io};
+use std::{f64::consts::PI, fs::File, io};
 
 use crate::{
     map::{MAP_HEIGHT, MAP_WIDTH},
@@ -30,7 +30,7 @@ fn main() -> io::Result<()> {
     assert_eq!(map::data().len(), MAP_HEIGHT * MAP_WIDTH);
 
     timeit! {
-        "render" => { render::draw(&mut ppm, player); }
+        "render" => { render::draw(&mut ppm, player, PI/3.); }
     };
 
     let written = timeit! { "write" => { ppm.write_to(&mut out)? }};
